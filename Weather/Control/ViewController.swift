@@ -30,7 +30,7 @@ class ViewController: UIViewController {
                 self.collectionView.reloadData()
             }
         }
-                
+        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -40,7 +40,8 @@ class ViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.frame = view.bounds
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-
+        collectionView.backgroundColor = .white
+        
         view.addSubview(collectionView)
         view.addSubview(temperatureLabel)
         view.addSubview(conditionLabel)
@@ -48,8 +49,10 @@ class ViewController: UIViewController {
         view.addSubview(imageView)
         
         setConstraint()
-
-        view.backgroundColor = .lightGray
+        
+        let choiceColor = checkTime()
+        print(choiceColor)
+        setBackground(choiceColor: choiceColor)
     }
     
     func setConstraint() {
@@ -76,8 +79,8 @@ class ViewController: UIViewController {
         
         imageView.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -5).isActive = true
         imageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: view.bounds.width / 3).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: view.bounds.width / 3 - 40).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func addLoadInformation() {
@@ -100,6 +103,35 @@ class ViewController: UIViewController {
         getDataTask.resume()
     }
     
+    func checkTime() -> Bool {
+//        print(Date().description(with: .current))
+//        let localDate = Date().description(with: .current)
+        let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "HH"
+        let localTime = dateFormater.string(from: Date())
+        
+        if 8 < Int(localTime) ?? 0 && Int(localTime) ?? 0 < 20 {
+            return true
+        }
+        return false
+        //        print(TimeZone.current)
+    }
+    
+    func setBackground(choiceColor: Bool) {
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
+
+        if choiceColor {
+            guard let img = UIImage(named: "Background.png") else { return }
+            imageView.image = img
+        } else {
+            guard let img = UIImage(named: "Background2.png") else { return }
+            imageView.image = img
+        }
+        imageView.contentMode = .scaleToFill
+        view.addSubview(imageView)
+        view.sendSubviewToBack(imageView)
+    }
+    
 }
 
 //  MARK: - extension
@@ -114,6 +146,11 @@ extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeatherCell.identifire, for: indexPath) as? WeatherCell else { return UICollectionViewCell() }
+        if checkTime() {
+            cell.backgroundColor = .systemOrange
+        } else {
+            cell.backgroundColor = .purple
+        }
         if currentData.count != 0 {
         switch indexPath.row {
         case 0:

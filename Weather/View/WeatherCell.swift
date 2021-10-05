@@ -12,7 +12,7 @@ class WeatherCell: UICollectionViewCell {
     
     let informationLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont(name: "Optima Regular", size: 18)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
@@ -28,7 +28,6 @@ class WeatherCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.addSubview(informationLabel)
-        self.backgroundColor = .gray
     }
     
     required init?(coder: NSCoder) {

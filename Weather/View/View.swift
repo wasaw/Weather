@@ -10,7 +10,7 @@ import UIKit
 class View: UIView {
     let temperatureLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 80)
+        label.font = UIFont(name: "Optima Regular", size: 80)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
@@ -19,7 +19,7 @@ class View: UIView {
     
     let conditionLabel: UILabel = {
         let label =  UILabel()
-        label.font = UIFont.systemFont(ofSize: 20)
+        label.font = UIFont(name: "Optima Regular", size: 20)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
@@ -28,7 +28,7 @@ class View: UIView {
     
     let dayLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 22)
+        label.font = UIFont(name: "Optima Regular", size: 22)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
@@ -37,7 +37,7 @@ class View: UIView {
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
