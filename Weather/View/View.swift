@@ -26,7 +26,7 @@ class View: UIView {
         return label
     }()
     
-    let dayLabel: UILabel = {
+    let cityLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Optima Regular", size: 22)
         label.textColor = .white

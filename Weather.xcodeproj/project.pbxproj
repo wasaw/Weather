@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB4ABFF3270F40CC008D05F8 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4ABFF2270F40CC008D05F8 /* LocationService.swift */; };
 		BBD5677A2701FB11003D0354 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD567792701FB11003D0354 /* AppDelegate.swift */; };
 		BBD5677C2701FB11003D0354 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD5677B2701FB11003D0354 /* SceneDelegate.swift */; };
 		BBD5677E2701FB11003D0354 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD5677D2701FB11003D0354 /* ViewController.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BB4ABFF2270F40CC008D05F8 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		BBD567762701FB11003D0354 /* Weather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Weather.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBD567792701FB11003D0354 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BBD5677B2701FB11003D0354 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				BBD5678A2701FB15003D0354 /* Info.plist */,
 				BBD567822701FB11003D0354 /* Weather.xcdatamodeld */,
 				BBD567932702EAE6003D0354 /* Request.swift */,
+				BB4ABFF2270F40CC008D05F8 /* LocationService.swift */,
 			);
 			path = Weather;
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 			files = (
 				BBD5679827033723003D0354 /* Model.swift in Sources */,
 				BBD567842701FB11003D0354 /* Weather.xcdatamodeld in Sources */,
+				BB4ABFF3270F40CC008D05F8 /* LocationService.swift in Sources */,
 				BBD5677E2701FB11003D0354 /* ViewController.swift in Sources */,
 				BBD567962702FE0F003D0354 /* View.swift in Sources */,
 				BBD5679B270361AD003D0354 /* WeatherCell.swift in Sources */,

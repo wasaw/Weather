@@ -15,22 +15,15 @@ class ViewController: UIViewController {
     private var localData = [Location]()
     private let temperatureLabel = View().temperatureLabel
     private let conditionLabel = View().conditionLabel
-    private let dayLabel = View().dayLabel
+    private let cityLabel = View().cityLabel
     private let imageView = View().imageView
+    private let locationService = LocationService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        DispatchQueue.main.async {
-            self.localData = Request().locationData
-            self.currentData = Request().currentData
-            if self.localData.count != 0 && self.currentData.count != 0 {
-                self.addLoadInformation()
-                self.fetchImage()
-                self.collectionView.reloadData()
-            }
-        }
         
+        initializeLocationServices()
+
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -45,16 +38,59 @@ class ViewController: UIViewController {
         view.addSubview(collectionView)
         view.addSubview(temperatureLabel)
         view.addSubview(conditionLabel)
-        view.addSubview(dayLabel)
+        view.addSubview(cityLabel)
         view.addSubview(imageView)
         
         setConstraint()
         
         let choiceColor = checkTime()
-        print(choiceColor)
         setBackground(choiceColor: choiceColor)
     }
     
+    func initializeLocationServices() {
+        locationService.delegate = self
+        
+        let isEnabled = locationService.enabled
+        guard isEnabled else {
+            promptForAuthorization()
+            return
+        }
+        
+        // start
+        locationService.requestAuthorization()
+    }
+    
+    func loadInformation() {
+        var textLocation = ""
+        guard let exposedLocation = self.locationService.exposedLocation else {
+            print("ExposedLocation is nil")
+            return
+        }
+        
+        self.locationService.getPlace(for: exposedLocation) { placemark in
+            guard let placemark = placemark else {
+                return
+            }
+            textLocation = placemark.locality ?? "Moscow"
+
+            if !textLocation.trimmingCharacters(in: .whitespaces).isEmpty {
+                let textWithDash = textLocation.replacingOccurrences(of: " ", with: "-")
+                textLocation = textWithDash
+            }
+
+            DispatchQueue.main.async {
+                let request = Request(location: textLocation)
+                self.localData = request.locationData
+                self.currentData = request.currentData
+                if self.localData.count != 0 && self.currentData.count != 0 {
+                    self.addLoadInformation()
+                    self.fetchImage()
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+        
     func setConstraint() {
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -72,10 +108,10 @@ class ViewController: UIViewController {
         conditionLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
         conditionLabel.widthAnchor.constraint(equalToConstant: 230).isActive = true
         
-        dayLabel.bottomAnchor.constraint(equalTo: collectionView.topAnchor).isActive = true
-        dayLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        dayLabel.widthAnchor.constraint(equalToConstant: view.bounds.width / 3).isActive = true
-        dayLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        cityLabel.bottomAnchor.constraint(equalTo: collectionView.topAnchor).isActive = true
+        cityLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+        cityLabel.widthAnchor.constraint(equalToConstant: view.bounds.width / 2).isActive = true
+        cityLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         imageView.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -5).isActive = true
         imageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -86,7 +122,7 @@ class ViewController: UIViewController {
     func addLoadInformation() {
         temperatureLabel.text = String(currentData[0].temp_c) + "º"
         conditionLabel.text = String(currentData[0].condition.text)
-        dayLabel.text = localData[0].name
+        cityLabel.text = localData[0].name
     }
     
     func fetchImage() {
@@ -104,8 +140,6 @@ class ViewController: UIViewController {
     }
     
     func checkTime() -> Bool {
-//        print(Date().description(with: .current))
-//        let localDate = Date().description(with: .current)
         let dateFormater = DateFormatter()
         dateFormater.dateFormat = "HH"
         let localTime = dateFormater.string(from: Date())
@@ -114,7 +148,6 @@ class ViewController: UIViewController {
             return true
         }
         return false
-        //        print(TimeZone.current)
     }
     
     func setBackground(choiceColor: Bool) {
@@ -132,13 +165,24 @@ class ViewController: UIViewController {
         view.sendSubviewToBack(imageView)
     }
     
+    func promptForAuthorization() {
+        let alert = UIAlertController(title: "Location access is needed to show current information", message: "Please allow location access", preferredStyle: .alert)
+        let settingsAction = UIAlertAction(title: "Settings", style: .default, handler: { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        })
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+
+        alert.addAction(settingsAction)
+        alert.addAction(cancelAction)
+              
+        alert.preferredAction = settingsAction
+
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 //  MARK: - extension
-extension ViewController: UICollectionViewDelegate {
-    
-}
-
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 8
@@ -152,32 +196,29 @@ extension ViewController: UICollectionViewDataSource {
             cell.backgroundColor = .purple
         }
         if currentData.count != 0 {
-        switch indexPath.row {
-        case 0:
-            cell.informationLabel.text = "Wmph"
-        case 1:
-            cell.informationLabel.text = "Wdir"
-        case 2:
-            cell.informationLabel.text = "Ph"
-        case 3:
-            cell.informationLabel.text = "Feels"
-        case 4:
-            cell.informationLabel.text = String(currentData[0].wind_mph)
-        case 5:
-            cell.informationLabel.text = currentData[0].wind_dir
-        case 6:
-            cell.informationLabel.text = String(currentData[0].pressure_mb)
-        case 7:
-            cell.informationLabel.text = String(currentData[0].feelslike_c)
-        default:
-            return cell
-        }
+            switch indexPath.row {
+            case 0:
+                cell.informationLabel.text = "Wmph"
+            case 1:
+                cell.informationLabel.text = "Wdir"
+            case 2:
+                cell.informationLabel.text = "Ph"
+            case 3:
+                cell.informationLabel.text = "Feels"
+            case 4:
+                cell.informationLabel.text = String(currentData[0].wind_mph)
+            case 5:
+                cell.informationLabel.text = currentData[0].wind_dir
+            case 6:
+                cell.informationLabel.text = String(currentData[0].pressure_mb)
+            case 7:
+                cell.informationLabel.text = String(currentData[0].feelslike_c)
+            default:
+                return cell
+            }
         }
         return cell
     }
-    
-    
-    
 }
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
@@ -198,5 +239,18 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
-
 }
+
+extension ViewController: LocationServiceDelegate {
+    func promptAuthorizationAction() {
+        promptForAuthorization()
+    }
+    
+    func didAuthorize() {
+        locationService.start()
+        loadInformation()
+    }
+}
+
+
+

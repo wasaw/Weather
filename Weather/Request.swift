@@ -13,10 +13,11 @@ public class Request {
     
     private let requestAdress = "http://api.weatherapi.com/v1/current.json?key="
     private let weatherKey = "42769d3ede75441186e131003212709"
-    private let localCity = "Moscow"
+    private let localCity: String
     private var requestFull: String
     
-    init() {
+    init(location: String) {
+        self.localCity = location
         self.requestFull = requestAdress + weatherKey + "&q=" + localCity + "&aqi=no"
         load()
     }
